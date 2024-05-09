@@ -1,34 +1,20 @@
 <script>
+	import { consentStore } from '$lib/stores/consentStore';
 
-    const cookieEnabled = true;
-    $: showCookieModal = true;
-	
-    onMount(() => {
-		const showCookie = localStorage.getItem('showCookieModal');
-		if (showCookie !== null) showCookieModal = JSON.parse(showCookie);
-		else showCookieModal = true;
-	});
+	let showBanner = false;
+	$: showBanner = $consentStore === null;
+
+	function handleConsent(decision) {
+		consentStore.setConsent(decision);
+	}
 </script>
 
 {#if showCookieModal && cookieEnabled}
 <div class="cookieContainer">
     <div class="contentContainer">
         <span class="cookieText">This website uses <a href="privacy-policy">analytics and cookies</a> to improve content delivery.</span>
-        <div
-            class="closeButton"
-            role="button"
-            tabindex="0"
-            on:keypress={() => {
-                showCookieModal = false;
-                localStorage.setItem('showCookieModal', 'false');
-            }}
-            on:click={() => {
-                showCookieModal = false;
-                localStorage.setItem('showCookieModal', 'false');
-            }}
-        >
-            &#10005;
-        </div>
+		<button class="cookieAccept" type="button" on:click={() => handleConsent('accepted')} on:keypress={(e) => e.key === 'Enter' && handleConsent('accepted')}>Accept</button>
+		<button class="cookieDecline" type="button" on:click={() => handleConsent('declined')} on:keypress={(e) => e.key === 'Enter' && handleConsent('declined')}>Decline</button>
     </div>
 </div>
 {/if}
@@ -45,19 +31,19 @@
     bottom: 0;
     left: 0;
     display: flex;
-    justify-content: center; /* Centers the content horizontally */
-    align-items: center; /* Aligns content vertically */
+    justify-content: center;
+    align-items: center;
     z-index: 9999;
     font-size: 14px;
     }
 
 .contentContainer {
-    display: inline-flex; /* Keeps text and close button inline */
+    display: inline-flex;
     align-items: center;
     }
 
 .cookieText {
-    margin-right: 10px; /* Space between text and close button */
+    margin-right: 10px;
     }
 
 .closeButton {
@@ -75,19 +61,19 @@
     }
 
 .closeButton:hover {
-    background-color: #ff69b4; /* Lighter red on hover for the close button */
+    background-color: #ff69b4;
     color: #D4EDFF;
     }
 
 .cookieContainer a {
-    color: #aaa6a7; /* Light grey color for links */
-    text-decoration: none; /* No underline by default */
-    margin: 0 5px; /* Margin on the sides of links */
-    background: none; /* No background color for links */
-    cursor: pointer; /* Pointer cursor for clickable items */
+    color: #aaa6a7;
+    text-decoration: none; 
+    margin: 0 5px;
+    background: none;
+    cursor: pointer;
     }
 
 .cookieContainer a:hover {
-    color: #ff69b4; /* Pink color on hover for links */
+    color: #ff69b4;
     }
 </style>
