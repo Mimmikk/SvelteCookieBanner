@@ -26,8 +26,7 @@ Script part is required:
 ```
 
 The actual banner:
-```ts
-
+```svelte
  <div class="cookieContainer">
     <div class="contentContainer">
         <span class="cookieText">This website uses <a href="privacy-policy">analytics and cookies</a> to improve content delivery.</span>
@@ -38,7 +37,7 @@ The actual banner:
 {/if}
 ```
 The only parts really required for this, as you may want to change things is:
-```ts
+```svelte
 {#if showBanner}
 		on:click={() => handleConsent('accepted')} on:keypress={(e) => e.key === 'Enter' && handleConsent('accepted')}
 		on:click={() => handleConsent('declined')} on:keypress={(e) => e.key === 'Enter' && handleConsent('declined')}
@@ -51,7 +50,7 @@ That means you can add this to whichever object suits you.
 Finally, you'll want to actually add the scripts and other logic you want which might conflict with GDPR/Privacy. For example GA/GT4.
 
 All parts are required. First `<script>`:
-```ts
+```svelte
 <script>
     import { consentStore } from '$lib/stores/consentStore';
 
@@ -60,7 +59,7 @@ All parts are required. First `<script>`:
 ```
 
 `<head>` tag:
-```ts
+```svelte
 <svelte:head>
     ....Your other config..
     {#if consented}
