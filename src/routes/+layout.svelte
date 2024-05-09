@@ -9,7 +9,7 @@
 	}
 </script>
 
-{#if showCookieModal && cookieEnabled}
+{#if showBanner}
 <div class="cookieContainer">
     <div class="contentContainer">
         <span class="cookieText">This website uses <a href="privacy-policy">analytics and cookies</a> to improve content delivery.</span>
