@@ -1,5 +1,5 @@
 # SvelteConsentBanner
-Cookie-consent banner for SvelteKit in TypeScript. Script is disabled until user presses Accept, if declines - no script (as expected).\
+Cookie-consent banner for SvelteKit in TypeScript (and JavaScript, if you so require it). Script is disabled until user presses Accept, if declines - no script (as expected).\
 STRONGLY recommend creating your own style for this.
 
 ## Implementation
