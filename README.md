@@ -1,73 +1,35 @@
 # sveltecookiebanner
-Cookie banner for SvelteKit. Script is disabled until user presses Accept, if declines - no script (as expected).
+Cookie-consent banner for SvelteKit. Script is disabled until user presses Accept, if declines - no script (as expected).\
+STRONGLY recommend creating your own style for this.
 
-STRONGLY recommend creating your own stylization for this.
-
-## Usage:
-
-Copy `$lib/stores/consentStore.ts` into your own stores folder. This handles Local Storage file, this approach was due to my projects separating `<svelte:head>` and `$routes/+layout.svelte`. So if your project is similar, great! SvelteStores is the solution.
-
-Copy the code from `$routes/+layout.svelte`. You obviously don't need all of it, there's a lot of placeholder styles left over from something else. Expand below to see.
-
-<details>
-Script part is required:
-  
-```svelte
-<script>
-	import { consentStore } from '$lib/stores/consentStore';
-
-	let showBanner = false;
-	$: showBanner = $consentStore === null;
-
-	function handleConsent(decision) {
-		consentStore.setConsent(decision);
-	}
-</script>
+## Implementation
+#### consentStore
+Copy `$lib/stores/consentStore.ts` into your selected stores folder. This handles all scripting around localStorage and injecting of a localStorage item, which looks like this:
+```json
+{
+  "consentState": {
+    "analytics": "$STATE",
+    "thirdParty": "$STATE",
+    "expiry": "$DATE"
+  }
+}
 ```
+You'll now be able to make a judgement based on `consentState` in the user's localStorage.
+#### consentBanner
+Select your preferred version, there are 2 premade versions:
 
-The actual banner:
-```svelte
- <div class="cookieContainer">
-    <div class="contentContainer">
-        <span class="cookieText">This website uses <a href="privacy-policy">analytics and cookies</a> to improve content delivery.</span>
-		<button class="cookieAccept" type="button" on:click={() => handleConsent('accepted')} on:keypress={(e) => e.key === 'Enter' && handleConsent('accepted')}>Accept</button>
-		<button class="cookieDecline" type="button" on:click={() => handleConsent('declined')} on:keypress={(e) => e.key === 'Enter' && handleConsent('declined')}>Decline</button>
-    </div>
-</div>
-{/if}
-```
-The only parts really required for this, as you may want to change things is:
-```svelte
-{#if showBanner}
-		on:click={() => handleConsent('accepted')} on:keypress={(e) => e.key === 'Enter' && handleConsent('accepted')}
-		on:click={() => handleConsent('declined')} on:keypress={(e) => e.key === 'Enter' && handleConsent('declined')}
-{/if}
-```
-That means you can add this to whichever object suits you.
-</details>
+- TailwindCSS `consentBannertwcss.svelte`
+- CSS `consentBannercss.svelte`
 
+There's also one barebones that only shows the required parts for easy implementation into an already existing version, `consentBanner.svelte`.\
+This is requires some input on your part, but is very useful to see how the implementation works.
 
-Finally, you'll want to actually add the scripts and other logic you want which might conflict with GDPR/Privacy. For example GA/GT4.
+If you wish to not use preferences, I suggest viewing the previous versions. You can also simply remove the related code.
 
-All parts are required. First `<script>`:
-```svelte
-<script>
-    import { consentStore } from '$lib/stores/consentStore';
+#### +layout
+There are multiple ways to add the banner to your `+layout.svelte` depending on what you're trying to achieve.\
+If you're simply wanting a consent banner that doesn't apply any scripts, see the example in `$routes/+layout.banneronly.svelte`.
 
-    $: consented = $consentStore === 'accepted';
-</script>
-```
-
-`<head>` tag:
-```svelte
-<svelte:head>
-    ....Your other config..
-    {#if consented}
-      <script>whatever scripts you have here</scripts>
-      <script>and as many as you want</script>
-    {/if}
-</svelte:head>
-```
-
-
-And you're done!
+However, if you're looking to actually implement scripting, cookies, etc. after a decision has been made by the user, see the example(s) in `$routes/+layout.svelte`.\
+These are particularly useful as they natively support third party requirements such as Google Consent Mode. For an example of this, check out `$routes/+layout.gconsent.svelte`.\
+For this feature, simply adjust what you require according to the various `consentStatus` states.
