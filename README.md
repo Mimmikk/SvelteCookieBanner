@@ -3,7 +3,7 @@ Cookie-consent banner for SvelteKit. Script is disabled until user presses Accep
 STRONGLY recommend creating your own style for this.
 
 ## Implementation
-#### consentStore
+### consentStore
 Copy `$lib/stores/consentStore.ts` into your selected stores folder. This handles all scripting around localStorage and injecting of a localStorage item, which looks like this:
 ```json
 {
@@ -15,7 +15,7 @@ Copy `$lib/stores/consentStore.ts` into your selected stores folder. This handle
 }
 ```
 You'll now be able to make a judgement based on `consentState` in the user's localStorage.
-#### consentBanner
+### consentBanner
 Select your preferred version, there are 2 premade versions:
 
 - TailwindCSS `consentBannertwcss.svelte`
@@ -26,7 +26,7 @@ This is requires some input on your part, but is very useful to see how the impl
 
 If you wish to not use preferences, I suggest viewing the previous versions. You can also simply remove the related code.
 
-#### +layout
+### +layout
 There are multiple ways to add the banner to your `+layout.svelte` depending on what you're trying to achieve.\
 If you're simply wanting a consent banner that doesn't apply any scripts, see the example in `$routes/+layout.banneronly.svelte`.
 
