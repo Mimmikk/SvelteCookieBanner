@@ -1,0 +1,96 @@
+import { writable } from 'svelte/store';
+import { browser } from '$app/environment';
+
+function createConsentStore() {
+  const defaultState = {
+    analytics: 'declined',
+    thirdParty: 'declined',
+    expiry: new Date(0).toISOString()
+  };
+  
+  const { subscribe, set, update } = writable(defaultState);
+
+  if (browser) {
+    // Initialize from localStorage
+    const consentString = localStorage.getItem('consentState');
+    if (consentString) {
+      try {
+        const savedState = JSON.parse(consentString);
+        const expiry = new Date(savedState.expiry);
+        
+        if (new Date() <= expiry) {
+          set(savedState);
+        }
+      } catch (e) {
+        // Default fallback
+      }
+    }
+  }
+
+  return {
+    subscribe,
+    acceptAll: () => {
+      const now = new Date();
+      const expiry = new Date(now.getTime() + (14 * 24 * 60 * 60 * 1000)); // 14 days
+      
+      const newState = {
+        analytics: 'accepted',
+        thirdParty: 'accepted',
+        expiry: expiry.toISOString()
+      };
+      
+      if (browser) {
+        localStorage.setItem('consentState', JSON.stringify(newState));
+      }
+      
+      set(newState);
+    },
+    declineAll: () => {
+      const now = new Date();
+      const expiry = new Date(now.getTime() + (3 * 24 * 60 * 60 * 1000)); // 3 days
+      
+      const newState = {
+        analytics: 'declined',
+        thirdParty: 'declined',
+        expiry: expiry.toISOString()
+      };
+      
+      if (browser) {
+        localStorage.setItem('consentState', JSON.stringify(newState));
+      }
+      
+      set(newState);
+    },
+    savePreferences: (analytics, thirdParty) => {
+      const now = new Date();
+      const expiry = new Date(now.getTime() + (14 * 24 * 60 * 60 * 1000)); // 14 days
+      
+      const newState = {
+        analytics: analytics ? 'accepted' : 'declined',
+        thirdParty: thirdParty ? 'accepted' : 'declined',
+        expiry: expiry.toISOString()
+      };
+      
+      if (browser) {
+        localStorage.setItem('consentState', JSON.stringify(newState));
+      }
+      
+      set(newState);
+    },
+    hasValidConsent: () => {
+      if (!browser) return false;
+      
+      const consentString = localStorage.getItem('consentState');
+      if (!consentString) return false;
+      
+      try {
+        const savedState = JSON.parse(consentString);
+        return new Date() <= new Date(savedState.expiry);
+      } catch (e) {
+        return false;
+      }
+    }
+  };
+}
+
+export const consentStore = createConsentStore();
